@@ -18,19 +18,16 @@ QQPLOT <- function(data, i){
 }
 
 BOXPLOT <- function(data,i){
-  p <- ggplot(data,aes(Class, data[i],color = Class))
-  p <- p+geom_boxplot()
-  p <- p+theme(plot.title = element_text(paste("Gráfico de Cajas y Bigotes para ",colnames(data[i]))),
-               axis.title.y = element_text(colnames(data[i])))
-  p 
+  p <- ggplot(data = data,aes(x = Class, y = data[i],fill = Class))
+  p <- p + stat_boxplot()
+  p <- p + ggtitle(paste("Box-plot",colnames(data[i])))+ylab(colnames(data[i]))
   return(p)
 }
 
 NORMALITY <- function(data){
   n <- length(data)
-  distribucion.teorica <- rnorm(n,mean = mean(data), sd = sd(data))
   test <- ks.test(data,"pnorm",mean = mean(data), sd = sd(data))
-  return  
+  return(test)  
 }
 
 #Función de libre uso puesta a disposición por el grupo de programadores de R, COOK-BOOK-R
@@ -71,7 +68,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 #Lectura del archivo
 seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
-                      col.names = c("Área","Perímetro","Compacidad","Largo de Núcleo","Ancho de núcleo","Asimetría","Largo de Estría del Núcleo","Class"))
+                      col.names = c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class"))
 
 
 
@@ -102,14 +99,14 @@ print(describe(seedsSC))
 #             si p-value > alfa aceptar Ho 
 #Numérico
 test1 <- NORMALITY(seedsCC[,1])
-#NORMALITY(seedsCC[,2])
-#NORMALITY(seedsCC[,3])
-#NORMALITY(seedsCC[,4])
-#NORMALITY(seedsCC[,5])
-#NORMALITY(seedsCC[,6])
-#NORMALITY(seedsCC[,7])
+test2 <- NORMALITY(seedsCC[,2])
+test3 <- NORMALITY(seedsCC[,3])
+test4 <- NORMALITY(seedsCC[,4])
+test5 <- NORMALITY(seedsCC[,5])
+test6 <- NORMALITY(seedsCC[,6])
+test7 <- NORMALITY(seedsCC[,7])
  
-#Gráfico
+#Gráficos de los datos 
 #Área
 p1.1 <- QQPLOT(seedsCC[seedsCC$Class == "Canadian",],1)
 p1.2 <- QQPLOT(seedsCC[seedsCC$Class == "Kama",],1)
@@ -153,15 +150,9 @@ p7.3 <- QQPLOT(seedsCC[seedsCC$Class == "Rosa",],7)
 p7.4 <- BOXPLOT(seedsCC,7)
 
 multiplot(p1.1,p1.2,p1.3, p1.4, cols = 2)
-
 multiplot(p2.1,p2.2,p2.3,p2.4,cols = 2)
-
-multiplot(p3.1,p3.2,p3.3,p3.4cols = 2)
-
+multiplot(p3.1,p3.2,p3.3,p3.4,cols = 2)
 multiplot(p4.1,p4.2,p4.3,p4.4,cols = 2)
-
 multiplot(p5.1,p5.2,p5.3,p5.4,cols = 2)
-
 multiplot(p6.1,p6.2,p6.3,p6.4,cols = 2)
-
 multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
