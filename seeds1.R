@@ -125,33 +125,33 @@ print(describe(seedsSC))
 #Recordar que si p-value <= alfa rechazar Ho
 #             si p-value > alfa aceptar Ho 
 #Numérico
-test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],1)
-test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],1)
-test1.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],1)
+test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",1])
+test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",1])
+test1.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",1])
 
-test2.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],2)
-test2.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],2)
-test2.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],2)
+test2.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",2])
+test2.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",2])
+test2.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",2])
 
-test3.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],3)
-test3.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],3)
-test3.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],3)
+test3.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",3])
+test3.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",3])
+test3.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",3])
 
-test4.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],4)
-test4.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],4)
-test4.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],4)
+test4.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",4])
+test4.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",4])
+test4.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",4])
 
-test5.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],5)
-test5.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],5)
-test5.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],5)
+test5.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",5])
+test5.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",5])
+test5.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",5])
 
-test6.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],6)
-test6.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],6)
-test6.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],6)
+test6.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",6])
+test6.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",6])
+test6.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",6])
 
-test7.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",],7)
-test7.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",],7)
-test7.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",],7)
+test7.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",7])
+test7.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",7])
+test7.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",7])
 
 #Gráficos de los datos. QQPLOT, para ver la normalidad gráficamente 
 #y boxplot para detectar posibles diferencias que se detectarán con test de diferencias de medias 
