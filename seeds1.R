@@ -45,9 +45,7 @@ BOXPLOT <- function(data,i){
 #o test no paramétricos 
 #Recibe como entrada un vector de datos de alguna variable
 NORMALITY <- function(data){
-  n <- length(data)
   test <- ks.test(data,"pnorm",mean = mean(data), sd = sd(data))
-  fitdist(data,"norm")
   return(test)  
 }
 
@@ -92,9 +90,12 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #     MAIN    #
 ###############
 
+names <- c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class")
+
 #Lectura del archivo
 seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
-                      col.names = c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class"))
+                      col.names = names)
+
 
 
 #       "Preprocesamiento"
@@ -123,7 +124,9 @@ print(describe(seedsSC))
 
 #Test de normalidad
 #Recordar que si p-value <= alfa rechazar Ho
-#             si p-value > alfa aceptar Ho 
+#             si p-value > alfa aceptar Ho  
+#Dicho en palabras un bajo valor de P, significa que la muestra provee suficiente evidencia 
+#como para rechaza la hipótesis nula
 #Numérico
 test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",1])
 test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",1])
@@ -152,6 +155,19 @@ test6.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",6])
 test7.1 <- NORMALITY(seedsCC[seedsCC$Class == "Canadian",7])
 test7.2 <- NORMALITY(seedsCC[seedsCC$Class == "Kama",7])
 test7.3 <- NORMALITY(seedsCC[seedsCC$Class == "Rosa",7])
+
+test.Canadian <-  c(test1.1$p.value, test2.1$p.value, test3.1$p.value, test4.1$p.value, test5.1$p.value, test6.1$p.value, test7.1$p.value)
+test.Kama <-      c(test1.2$p.value, test2.2$p.value, test3.2$p.value, test4.2$p.value, test5.2$p.value, test6.2$p.value, test7.2$p.value)
+test.Rosa <-      c(test1.3$p.value, test2.3$p.value, test3.3$p.value, test4.3$p.value, test5.3$p.value, test6.3$p.value, test7.3$p.value)
+
+normal.test <- data.frame(names[1:7],test.Canadian,test.Kama,test.Rosa, row.names = 1)
+result.test <- normal.test
+result.test[result.test > 0.05] <- "Normal"
+result.test[result.test <= 0.05] <- "No Normal"
+
+print(normal.test)
+print(result.test)
+
 
 #Gráficos de los datos. QQPLOT, para ver la normalidad gráficamente 
 #y boxplot para detectar posibles diferencias que se detectarán con test de diferencias de medias 
@@ -200,13 +216,35 @@ p7.3 <- QQPLOT(seedsCC[seedsCC$Class == "Rosa",],7)
 p7.4 <- BOXPLOT(seedsCC,7)
 
 #Se grafican los datos entregados
-multiplot(p1.1,p1.2,p1.3, p1.4, cols = 2)
-multiplot(p2.1,p2.2,p2.3,p2.4,cols = 2)
-multiplot(p3.1,p3.2,p3.3,p3.4,cols = 2)
-multiplot(p4.1,p4.2,p4.3,p4.4,cols = 2)
-multiplot(p5.1,p5.2,p5.3,p5.4,cols = 2)
-multiplot(p6.1,p6.2,p6.3,p6.4,cols = 2)
-multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
+# multiplot(p1.1,p1.2,p1.3, p1.4, cols = 2)
+# multiplot(p2.1,p2.2,p2.3,p2.4,cols = 2)
+# multiplot(p3.1,p3.2,p3.3,p3.4,cols = 2)
+# multiplot(p4.1,p4.2,p4.3,p4.4,cols = 2)
+# multiplot(p5.1,p5.2,p5.3,p5.4,cols = 2)
+# multiplot(p6.1,p6.2,p6.3,p6.4,cols = 2)
+# multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
 
-# ANOVA
+#Realizar ANOVA
+#Solo LoKG, necesita una prueba no paramétrica Kruskal-Wallis y con post-hoc de U de mann-withneya
+#Son más de 30 datos, entonces es robusto frente a la homocedasticidad
+#LOs factores son los tipos de semillas
+#Dado que son todas semillas diferentes, se opta por la utilización de un anova entre sujetos (no medidas repetidas)
 
+attach(seedsCC)
+
+aov.area <-       anova(aov(Área~Class, na.action = na.exclude))
+aov.perimetro <-  anova(aov(Perímetro~Class, na.action = na.exclude))
+aov.compacidad <- anova(aov(Compacidad~Class, na.action = na.exclude))
+aov.lok <-        anova(aov(LoK~Class, na.action = na.exclude))
+aov.wok <-        anova(aov(WoK~Class, na.action = na.exclude))
+aov.asimetria <-  anova(aov(Asimetría~Class, na.action = na.exclude))
+aov.lokg <-       anova(aov(LoKG~Class, na.action = na.exclude))
+
+p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`Pr(>F)`[1],aov.lok$`Pr(>F)`[1],
+                aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$`Pr(>F)`[1])
+result.aov <- data.frame(names[1:7],p.value.aov)
+
+significancia<- c(result.aov$p.value.aov <= 0.05)
+result.aov$sig <- significancia
+result.aov$sig[!significancia] <- "No hay diferencias significativas"
+result.aov$sig[significancia] <- "Sí hay diferencias significativas"
