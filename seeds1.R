@@ -238,10 +238,10 @@ aov.compacidad <- anova(aov(Compacidad~Class, na.action = na.exclude))
 aov.lok <-        anova(aov(LoK~Class, na.action = na.exclude))
 aov.wok <-        anova(aov(WoK~Class, na.action = na.exclude))
 aov.asimetria <-  anova(aov(Asimetría~Class, na.action = na.exclude))
-aov.lokg <-       anova(aov(LoKG~Class, na.action = na.exclude))
+aov.lokg <-       kruskal.test(LoKG~Class, na.action = na.exclude)
 
 p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`Pr(>F)`[1],aov.lok$`Pr(>F)`[1],
-                aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$`Pr(>F)`[1])
+                aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$p.value)
 result.aov <- data.frame(names[1:7],p.value.aov)
 
 significancia<- c(result.aov$p.value.aov <= 0.05)
