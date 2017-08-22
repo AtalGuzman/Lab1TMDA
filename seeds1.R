@@ -96,16 +96,14 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 names <- c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class")
 
 #Lectura del archivo
-<<<<<<< HEAD
 seedsCC <- read.table("C:\\Users\\Natalia\\Google Drive\\2017 - 2\\Minería de Datos Avanzada\\IX.- grupo 4 seeds\\seeds_dataset.txt", 
                       col.names = names)
-seedsCC$Class<- as.factor(seedsCC$Class)
-=======
+
 #seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
 #                      col.names = names)
 
-seedsCC <- read.table("C:\\Users\\usuario\\Documents\\1.- Universidad\\nivel 10\\Taller de minería de datos avanzada\\Laboratorio 1\\seeds_dataset.txt", 
-                      col.names = names)
+#seedsCC <- read.table("C:\\Users\\usuario\\Documents\\1.- Universidad\\nivel 10\\Taller de minería de datos avanzada\\Laboratorio 1\\seeds_dataset.txt", 
+     #                 col.names = names)
 
 seedsCC$Class <- as.factor(seedsCC$Class)
 seedsCC$Clase[seedsCC$Class == 1] <- "Canadian"
@@ -113,7 +111,6 @@ seedsCC$Clase[seedsCC$Class == 2] <- "Kama"
 seedsCC$Clase[seedsCC$Class == 3] <- "Roma"
 
 
->>>>>>> refs/remotes/origin/master
 #       "Preprocesamiento"
 #Limpieza de datos
 #   Encontrar datos pérdidos
@@ -144,13 +141,9 @@ cat("\n#####    TEST DE NORMALIDAD   #####\n\n")
 #             si p-value > alfa aceptar Ho  
 #Dicho en palabras un bajo valor de P, significa que la muestra provee suficiente evidencia 
 #como para rechaza la hipótesis nula
-<<<<<<< HEAD
 #Numérico
-=======
-
 #Test de normalidad numéricos para cada una de las características
 
->>>>>>> refs/remotes/origin/master
 test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",1])
 test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "2",1])
 test1.3 <- NORMALITY(seedsCC[seedsCC$Class == "3",1])
@@ -244,19 +237,6 @@ p7.4 <- BOXPLOT(seedsCC,7)
 #Son más de 30 datos, entonces es robusto frente a la homocedasticidad
 #LOs factores son los tipos de semillas
 #Dado que son todas semillas diferentes, se opta por la utilización de un anova entre sujetos (no medidas repetidas)
-<<<<<<< HEAD
-attach(seedsCC)
-aov.area <-       anova(aov(Área~Class, na.action = na.exclude))
-aov.perimetro <-  anova(aov(Perímetro~Class, na.action = na.exclude))
-aov.compacidad <- anova(aov(Compacidad~Class, na.action = na.exclude))
-aov.lok <-        anova(aov(LoK~Class, na.action = na.exclude))
-aov.wok <-        anova(aov(WoK~Class, na.action = na.exclude))
-aov.asimetria <-  anova(aov(Asimetría~Class, na.action = na.exclude))
-aov.lokg <-       kruskal.test(LoKG~Class, na.action = na.exclude)
-
-p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`Pr(>F)`[1],aov.lok$`Pr(>F)`[1],
-                aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$p.value)
-=======
 
 attach(seedsCC)
 aov.area <-       aov(Área~Class, na.action = na.exclude)
@@ -272,18 +252,10 @@ p.value.aov <- c(anova(aov.area)$`Pr(>F)`[1],anova(aov.perimetro)$`Pr(>F)`[1],an
                  anova(aov.wok)$`Pr(>F)`[1],anova(aov.asimetria)$`Pr(>F)`[1],
                  aov.lokg$p.value)
 
->>>>>>> refs/remotes/origin/master
 result.aov <- data.frame(names[1:7],p.value.aov)
 result.aov$sig[!result.aov$p.value.aov > 0.05] <- "No hay diferencias significativas"
 result.aov$sig[result.aov$p.value.aov <= 0.05] <- "Sí hay diferencias significativas"
 
-<<<<<<< HEAD
-significancia<- c(result.aov$p.value.aov <= 0.05)
-result.aov$sig <- significancia
-result.aov$sig[!significancia] <- "No hay diferencias significativas"
-result.aov$sig[significancia] <- "Sí hay diferencias significativas"
-=======
->>>>>>> refs/remotes/origin/master
 cat("\n####   RESULTADOS DE ANÁLISIS DE VARIANZA    ####\n\n")
 print(result.aov)
 
@@ -311,52 +283,106 @@ multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
 #     REALIZACIÓN DE AGRUPAMIENTO         #
 ###########################################
 
+#Función que se encarga de calcular el mclust, dado el grado de claster
+#a considerar (g) y el modelo que puede ser "EII", etc.
+MCLUST<- function(data, g, model){
+  p=Mclust(seedsSC, G=g, prior=priorControl(functionName = "defaultPrior", shrinkage=0.1, modelNames=model))
+  return(p)
+}
 
+#modelos a evaluar y comparar
+model.names=c("EII", "VII", "EEI", "VEI", "EVI", "VVI", "EEE", "EEV", "VEV", "VVV")
 
-mod1 = Mclust(seedsSC) #Default
-summary(mod1)
-mod2 = Mclust(seedsSC, G=3) #Con 3 grupos
-summary(mod2, parameter=TRUE)
-
-#EII
-mod6 = Mclust(seedsSC, prior=priorControl(functionName = "defaultPrior", shrinkage=0.1, modelNames="EII"))
-summary(mod6, parameter=TRUE)
-plot(mod6, what="classification")
-legend("bottomright", legend=1:8, #numero de clusters
-       col=mclust.options("classPlotColors"),
-       pch=mclust.options("classPlotColors"),
-       title="Class labels:")
-#Hacer todo variable
+#1- Hacer todo variable.
+#resumen de loglikehood dado el modelo y numero de clusters
+#sirve para comparar entre distintos modelos y distintos grupos.
+cruza.datos <- data.frame(Modelo=numeric(), Grupos=numeric(), LogLikehood=numeric(), Bic=numeric())
+for(i in 1:10){
+  for(j in 2:10){
+    m<-MCLUST(seedsSC, g=j, model=model.names[i])
+    iteraciones <-rbind(iteraciones, 
+                        data.frame(
+                          Modelo=model.names[i],
+                          Grupos=j,
+                          LogLikehood=m$loglik,
+                          Bic=m$bic))
+    #Para ir graficando todas las combinaciones D:
+    #plot(m, what="classification")
+    #legend("bottomright", legend=1:8, #numero de clusters
+    #       col=mclust.options("classPlotColors"),
+    #       pch=mclust.options("classPlotColors"),
+    #       title="Class labels:")
+    }
+}
+summary(iteraciones)
 
 #Hacer el gráfico de BIC
-class = seedsCC$Class
+#mientras mayor es el resultado de Bic, mejor es la clasificacion
 BIC= mclustBIC(seedsCC[,1:7], prior= priorControl(functionName="defaultPrior", shrinkage=0.1))
 plot(BIC)
 summary(BIC) #presentan los mejores valores
 
-#en base al mejor valor de
-mod11 = Mclust(seedsSC, x=BIC)
-summary(mod11)
-plot(mod11, what="classification")
-table (class, mod11$classification)#districionde clases por cada grupo.
+#en base al mejor valor segun BIC (los tres mejores)
+mejor1 = Mclust(seedsSC, modelNames="EEV", G=3)
+summary(mejor1)
+plot(mejor1, what="classification")
+mejor2 = Mclust(seedsSC, modelNames="VEV", G=3)
+summary(mejor2)
+plot(mejor2, what="classification")
+mejor3 = Mclust(seedsSC, modelNames="VVV", G=3)
+summary(mejor3)
+plot(mejor3, what="classification")
+
+seedsCC$Class <- as.factor(seedsCC$Class)
+seedsCC$Clase[seedsCC$Class == 1] <- "Canadian"
+seedsCC$Clase[seedsCC$Class == 2] <- "Kama"
+seedsCC$Clase[seedsCC$Class == 3] <- "Roma"
+#comparación de clasificacion 
+#la clase que debería ser versus la clase que es
+table (seedsCC$Class, mejor1$classification)#districionde clases por cada grupo.
+table (seedsCC$Class, mejor2$classification)
+table (seedsCC$Class, mejor3$classification)
+
+#para comparar con el peor en 3 grupos:
+peor1= Mclust(seedsSC, modelNames ="EII", G=3 )
+plot(peor1, what="classification")
+peor2= Mclust(seedsSC, modelNames ="VII", G=4 )
+plot(peor1, what="classification")
+
+table (seedsCC$Class, peor1$classification)#districionde clases por cada grupo.
+table (seedsCC$Class, peor2$classification)
 
 
-#Hacer el agrupamiento 
 
 #Hacer agrupamiento K-medias
 
 require(graphics)
 
-
-(cl <- kmeans(seedsSC, 3, algorithm = "MacQueen"))
+cl <- kmeans(seedsSC, 3, algorithm = "MacQueen")
 plot(seedsSC, col = cl$cluster)
 points(cl$centers, col = 1:2, pch = 8, cex = 2)
 
-(cl <- kmeans(seedsSC, 4, algorithm = "MacQueen"))
+table(seedsCC$Class,cl$cluster)
+
+cl <- kmeans(seedsSC, 3, algorithm = "Hartigan-Wong")
 plot(seedsSC, col = cl$cluster)
 points(cl$centers, col = 1:2, pch = 8, cex = 2)
 
-<<<<<<< HEAD
+table(seedsCC$Class,cl$cluster)
+
+cl <- kmeans(seedsSC, 3, algorithm = "Lloyd")
+plot(seedsSC, col = cl$cluster)
+points(cl$centers, col = 1:2, pch = 8, cex = 2)
+
+table(seedsCC$Class,cl$cluster)
+
+cl <- kmeans(seedsSC, 3, algorithm = "Forgy")
+plot(seedsSC, col = cl$cluster)
+points(cl$centers, col = 1:2, pch = 8, cex = 2)
+table(seedsCC$Class,cl$cluster)
+
+
+
 #Analisis de componentes principales
 pairs(seedsSC) #correlación gráfica entre diferentes variables
 cor(seedsSC) #tabla de correlación
@@ -368,13 +394,4 @@ plot(comp, type="lines")
 biplot(comp)
 
 library(rgl)
-plot3d(comp$scores[,1:3], col=seedsCC$Class, pch=21)
-
-
-
-
-=======
-pc <- princomp(seedsSC, cor = TRUE, scores = TRUE)
-
-plot3d(pc$scores[,1:3], col=iris$Species)
->>>>>>> refs/remotes/origin/master
+plot3d(seedsSC[1:3], col=seedsCC$Class, pch=21)
