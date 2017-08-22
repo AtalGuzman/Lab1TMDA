@@ -3,7 +3,7 @@ library(psych)
 library(ggplot2)
 library(grid)
 library(gridExtra)
-
+library(rgl)
 
 #####################################
 #     Declaración de funciones      #
@@ -138,7 +138,7 @@ cat("\n#####    TEST DE NORMALIDAD   #####\n\n")
 #             si p-value > alfa aceptar Ho  
 #Dicho en palabras un bajo valor de P, significa que la muestra provee suficiente evidencia 
 #como para rechaza la hipótesis nula
-s
+
 #Test de normalidad numéricos para cada una de las características
 
 test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",1])
@@ -294,3 +294,6 @@ multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
 
 
 
+pc <- princomp(seedsSC, cor = TRUE, scores = TRUE)
+
+plot3d(pc$scores[,1:3], col=iris$Species)
