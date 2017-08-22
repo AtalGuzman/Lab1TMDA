@@ -128,7 +128,9 @@ cat("\n#####    TEST DE NORMALIDAD   #####\n\n")
 #             si p-value > alfa aceptar Ho  
 #Dicho en palabras un bajo valor de P, significa que la muestra provee suficiente evidencia 
 #como para rechaza la hipótesis nula
-#Numérico
+s
+#Test de normalidad numéricos para cada una de las características
+
 test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",1])
 test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "2",1])
 test1.3 <- NORMALITY(seedsCC[seedsCC$Class == "3",1])
@@ -157,15 +159,20 @@ test7.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",7])
 test7.2 <- NORMALITY(seedsCC[seedsCC$Class == "2",7])
 test7.3 <- NORMALITY(seedsCC[seedsCC$Class == "3",7])
 
+#A continuación se procede a crear un dataframe
+#con el objetivo de recolectar la información importante obtenida en los test realizados anteriormente.
 test.Canadian <-  c(test1.1$p.value, test2.1$p.value, test3.1$p.value, test4.1$p.value, test5.1$p.value, test6.1$p.value, test7.1$p.value)
 test.Kama <-      c(test1.2$p.value, test2.2$p.value, test3.2$p.value, test4.2$p.value, test5.2$p.value, test6.2$p.value, test7.2$p.value)
 test.Rosa <-      c(test1.3$p.value, test2.3$p.value, test3.3$p.value, test4.3$p.value, test5.3$p.value, test6.3$p.value, test7.3$p.value)
 
 normal.test <- data.frame(names[1:7],test.Canadian,test.Kama,test.Rosa, row.names = 1)
+
+#Finalmente, se crea un último dataframe que recaba la conclusión de los testss
 result.test <- normal.test
 result.test[result.test > 0.05] <- "Normal"
 result.test[result.test <= 0.05] <- "No Normal"
 
+#Se muestran por consola los dataframes creados
 print(normal.test)
 cat("\n")
 print(result.test)
@@ -174,7 +181,6 @@ print(result.test)
 #Gráficos de los datos. QQPLOT, para ver la normalidad gráficamente 
 #y boxplot para detectar posibles diferencias que se detectarán con test de diferencias de medias 
 #(paramétrica o no parámetrica según sea el caso)
-
 #Área
 p1.1 <- QQPLOT(seedsCC[seedsCC$Class == "1",],1)
 p1.2 <- QQPLOT(seedsCC[seedsCC$Class == "2",],1)
@@ -222,7 +228,6 @@ p7.4 <- BOXPLOT(seedsCC,7)
 #Son más de 30 datos, entonces es robusto frente a la homocedasticidad
 #LOs factores son los tipos de semillas
 #Dado que son todas semillas diferentes, se opta por la utilización de un anova entre sujetos (no medidas repetidas)
-
 aov.area <-       anova(aov(Área~Class, na.action = na.exclude))
 aov.perimetro <-  anova(aov(Perímetro~Class, na.action = na.exclude))
 aov.compacidad <- anova(aov(Compacidad~Class, na.action = na.exclude))
@@ -231,10 +236,13 @@ aov.wok <-        anova(aov(WoK~Class, na.action = na.exclude))
 aov.asimetria <-  anova(aov(Asimetría~Class, na.action = na.exclude))
 aov.lokg <-       kruskal.test(LoKG~Class, na.action = na.exclude)
 
+#Se crea un dataframe recolectando los datos de los realizados anteriormente.
 p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`Pr(>F)`[1],aov.lok$`Pr(>F)`[1],
                 aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$p.value)
 result.aov <- data.frame(names[1:7],p.value.aov)
 
+#Se codifican los resultados para observar rápidamente si
+#existe o no información suficiente para determinar si existen diferencias significativas
 significancia<- c(result.aov$p.value.aov <= 0.05)
 result.aov$sig <- significancia
 result.aov$sig[!significancia] <- "No hay diferencias significativas"
@@ -243,7 +251,6 @@ cat("\n####   RESULTADOS DE ANÁLISIS DE VARIANZA    ####\n\n")
 print(result.aov)
 
 #Se grafican los datos entregados
-
 cat("\n\n####   GENERACIÓN DE GRÁFICOS   ####\n")
 cat("\n####   ESPERE UN MOMENTO   ####\n")
 multiplot(p1.1,p1.2,p1.3, p1.4, cols = 2)
