@@ -290,16 +290,29 @@ table (class, mod11$classification)#districionde clases por cada grupo.
 
 #Hacer agrupamiento K-medias
 
+require(graphics)
 
 
+(cl <- kmeans(seedsSC, 3, algorithm = "MacQueen"))
+plot(seedsSC, col = cl$cluster)
+points(cl$centers, col = 1:2, pch = 8, cex = 2)
 
+(cl <- kmeans(seedsSC, 4, algorithm = "MacQueen"))
+plot(seedsSC, col = cl$cluster)
+points(cl$centers, col = 1:2, pch = 8, cex = 2)
 
+#Analisis de componentes principales
+pairs(seedsSC) #correlación gráfica entre diferentes variables
+cor(seedsSC) #tabla de correlación
 
+round(cor(seedsSC),2)
+comp= princomp(seedsSC, cor=TRUE, score=TRUE)
+summary(comp)
+plot(comp, type="lines")
+biplot(comp)
 
-
-
-
-
+library(rgl)
+plot3d(comp$scores[,1:3], col=seedsCC$Class, pch=21)
 
 
 
