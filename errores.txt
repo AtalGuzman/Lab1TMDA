@@ -1,0 +1,12 @@
+mejorBIC1	31
+mejorBIC2	23
+mejorBIC3	22
+peorBIC1	22
+peorBIC2	24
+mejorICL1	25
+mejorICL2	25
+mejorICL3	31
+MacQueen	23
+HertiganWong	23
+Lloyd	22
+Forgy	22

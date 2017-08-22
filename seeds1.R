@@ -4,6 +4,7 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(rgl)
+require(graphics)
 
 #####################################
 #     Declaración de funciones      #
@@ -300,7 +301,7 @@ cruza.datos <- data.frame(Modelo=numeric(), Grupos=numeric(), LogLikehood=numeri
 for(i in 1:10){
   for(j in 2:10){
     m<-MCLUST(seedsSC, g=j, model=model.names[i])
-    iteraciones <-rbind(iteraciones, 
+    cruza.datos <-rbind(cruza.datos, 
                         data.frame(
                           Modelo=model.names[i],
                           Grupos=j,
@@ -314,7 +315,7 @@ for(i in 1:10){
     #       title="Class labels:")
     }
 }
-summary(iteraciones)
+summary(cruza.datos)
 
 #Hacer el gráfico de BIC
 #mientras mayor es el resultado de Bic, mejor es la clasificacion
@@ -323,63 +324,72 @@ plot(BIC)
 summary(BIC) #presentan los mejores valores
 
 #en base al mejor valor segun BIC (los tres mejores)
-mejor1 = Mclust(seedsSC, modelNames="EEV", G=3)
-summary(mejor1)
-plot(mejor1, what="classification")
-mejor2 = Mclust(seedsSC, modelNames="VEV", G=3)
-summary(mejor2)
-plot(mejor2, what="classification")
-mejor3 = Mclust(seedsSC, modelNames="VVV", G=3)
-summary(mejor3)
-plot(mejor3, what="classification")
+mejorBIC1 = Mclust(seedsSC, modelNames="EEV", G=3)
+summary(mejorBIC1)
+plot(mejorBIC1, what="classification")
+mejorBIC2 = Mclust(seedsSC, modelNames="VEV", G=3)
+summary(mejorBIC2)
+plot(mejorBIC2, what="classification")
+mejorBIC3 = Mclust(seedsSC, modelNames="VVV", G=3)
+summary(mejorBIC3)
+plot(mejorBIC3, what="classification")
 
-seedsCC$Class <- as.factor(seedsCC$Class)
-seedsCC$Clase[seedsCC$Class == 1] <- "Canadian"
-seedsCC$Clase[seedsCC$Class == 2] <- "Kama"
-seedsCC$Clase[seedsCC$Class == 3] <- "Roma"
+
 #comparación de clasificacion 
 #la clase que debería ser versus la clase que es
-table (seedsCC$Class, mejor1$classification)#districionde clases por cada grupo.
-table (seedsCC$Class, mejor2$classification)
-table (seedsCC$Class, mejor3$classification)
+table (seedsCC$Clase, mejorBIC1$classification)#districionde clases por cada grupo.
+table (seedsCC$Clase, mejorBIC2$classification)
+table (seedsCC$Clase, mejorBIC3$classification)
 
 #para comparar con el peor en 3 grupos:
-peor1= Mclust(seedsSC, modelNames ="EII", G=3 )
-plot(peor1, what="classification")
-peor2= Mclust(seedsSC, modelNames ="VII", G=4 )
-plot(peor1, what="classification")
+peorBIC1= Mclust(seedsSC, modelNames ="EII", G=3 )
+plot(peorBIC1, what="classification")
+peorBIC2= Mclust(seedsSC, modelNames ="VII", G=3 )
+plot(peorBIC1, what="classification")
 
-table (seedsCC$Class, peor1$classification)#districionde clases por cada grupo.
-table (seedsCC$Class, peor2$classification)
+table (seedsCC$Clase, peorBIC1$classification)#districionde clases por cada grupo.
+table (seedsCC$Clase, peorBIC2$classification)
 
+#Comparar con ICL
+ICL = mclustICL(seedsSC)
+summary(ICL)
 
+mejorICL1 = Mclust(seedsSC, modelNames="VEV", G=5)
+summary(mejorICL1)
+plot(mejorICL1, what="classification")
+mejorICL2 = Mclust(seedsSC, modelNames="EEV", G=5)
+summary(mejorICL2)
+plot(mejorICL2, what="classification")
+mejorICL3 = Mclust(seedsSC, modelNames="EEV", G=3) #igual en bic
+summary(mejorICL3)
+plot(mejorICL3, what="classification")
+
+table(seedsCC$Clase, mejorICL1$classification)#districionde clases por cada grupo.
+table (seedsCC$Clase, mejorICL2$classification)
+table (seedsCC$Clase, mejorICL3$classification)
 
 #Hacer agrupamiento K-medias
+MacQueen <- kmeans(seedsSC, 3, algorithm = "MacQueen")
+plot(seedsSC, col = MacQueen$cluster)
+points(MacQueen$centers, col = 1:2, pch = 8, cex = 2)
 
-require(graphics)
+HertiganWong <- kmeans(seedsSC, 3, algorithm = "Hartigan-Wong")
+plot(seedsSC, col = HertiganWong$cluster)
+points(HertiganWong$centers, col = 1:2, pch = 8, cex = 2)
 
-cl <- kmeans(seedsSC, 3, algorithm = "MacQueen")
-plot(seedsSC, col = cl$cluster)
-points(cl$centers, col = 1:2, pch = 8, cex = 2)
+Lloyd <- kmeans(seedsSC, 3, algorithm = "Lloyd")
+plot(seedsSC, col = Lloyd$cluster)
+points(Lloyd$centers, col = 1:2, pch = 8, cex = 2)
 
-table(seedsCC$Class,cl$cluster)
+Forgy <- kmeans(seedsSC, 3, algorithm = "Forgy")
+plot(seedsSC, col = Forgy$cluster)
+points(Forgy$centers, col = 1:2, pch = 8, cex = 2)
 
-cl <- kmeans(seedsSC, 3, algorithm = "Hartigan-Wong")
-plot(seedsSC, col = cl$cluster)
-points(cl$centers, col = 1:2, pch = 8, cex = 2)
-
-table(seedsCC$Class,cl$cluster)
-
-cl <- kmeans(seedsSC, 3, algorithm = "Lloyd")
-plot(seedsSC, col = cl$cluster)
-points(cl$centers, col = 1:2, pch = 8, cex = 2)
-
-table(seedsCC$Class,cl$cluster)
-
-cl <- kmeans(seedsSC, 3, algorithm = "Forgy")
-plot(seedsSC, col = cl$cluster)
-points(cl$centers, col = 1:2, pch = 8, cex = 2)
-table(seedsCC$Class,cl$cluster)
+#Comparación entre los distintos algoritmos de k-medias
+table(seedsCC$Clase,MacQueen$cluster)
+table(seedsCC$Clase,HertiganWong$cluster)
+table(seedsCC$Clase,Lloyd$cluster)
+table(seedsCC$Clase,Forgy$cluster)
 
 
 
