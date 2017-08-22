@@ -38,6 +38,9 @@ BOXPLOT <- function(dato,i){
   p <- ggplot(data = dato,aes(x = Class, y = dato[i],fill = Class))
   p <- p + stat_boxplot()
   p <- p + ggtitle(paste("Box-plot",colnames(dato[i])))+ylab(colnames(dato[i]))
+  p <- p+ scale_fill_discrete(name="Clase",
+                              breaks=c("1", "2", "3"),
+                              labels=c("Canadian", "Kama", "Roma"))
   return(p)
 }
 
@@ -231,21 +234,24 @@ p7.4 <- BOXPLOT(seedsCC,7)
 #Dado que son todas semillas diferentes, se opta por la utilización de un anova entre sujetos (no medidas repetidas)
 
 attach(seedsCC)
-aov.area <-       anova(aov(Área~Class, na.action = na.exclude))
-aov.perimetro <-  anova(aov(Perímetro~Class, na.action = na.exclude))
-aov.compacidad <- anova(aov(Compacidad~Class, na.action = na.exclude))
-aov.lok <-        anova(aov(LoK~Class, na.action = na.exclude))
-aov.wok <-        anova(aov(WoK~Class, na.action = na.exclude))
-aov.asimetria <-  anova(aov(Asimetría~Class, na.action = na.exclude))
+aov.area <-       aov(Área~Class, na.action = na.exclude)
+aov.perimetro <-  aov(Perímetro~Class, na.action = na.exclude)
+aov.compacidad <- aov(Compacidad~Class, na.action = na.exclude)
+aov.lok <-        aov(LoK~Class, na.action = na.exclude)
+aov.wok <-        aov(WoK~Class, na.action = na.exclude)
+aov.asimetria <-  aov(Asimetría~Class, na.action = na.exclude)
 aov.lokg <-       kruskal.test(LoKG~Class, na.action = na.exclude)
 
-p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`Pr(>F)`[1],aov.lok$`Pr(>F)`[1],
-                aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$p.value)
+p.value.aov <- c(anova(aov.area)$`Pr(>F)`[1],anova(aov.perimetro)$`Pr(>F)`[1],anova(aov.compacidad)$`Pr(>F)`[1],
+                 anova(aov.lok)$`Pr(>F)`[1],
+                 anova(aov.wok)$`Pr(>F)`[1],anova(aov.asimetria)$`Pr(>F)`[1],
+                 aov.lokg$p.value)
+
 result.aov <- data.frame(names[1:7],p.value.aov)
 
-result.aov$sig <- significancia
-result.aov$sig[!result.aov$p.value.aov <= 0.05] <- "No hay diferencias significativas"
+result.aov$sig[!result.aov$p.value.aov > 0.05] <- "No hay diferencias significativas"
 result.aov$sig[result.aov$p.value.aov <= 0.05] <- "Sí hay diferencias significativas"
+
 cat("\n####   RESULTADOS DE ANÁLISIS DE VARIANZA    ####\n\n")
 print(result.aov)
 
