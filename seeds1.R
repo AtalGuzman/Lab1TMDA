@@ -1,33 +1,8 @@
-<<<<<<< HEAD
-require(mclust)
-require(Hmisc)
-require(ggplot2)
-
-#Funciones utilizadas
-QQPLOT <- function(data){
-  
-  sample <- data[,1:7]
-  x <- qnorm(c(0.25,0.75))
-  y <- quantile(data[,1:7], c(0.25,0.75))
-  m <- diff(y)/diff(x)
-  int <- y[1] - m * x[1]
-  p <- ggplot(data, aes(sample = data[,1:7]))+
-    stat_qq()+
-    geom_abline(slope = m, intercept = int,color = "blue")
-  p
-  }
-
-#Lectura del archivo
-seedsCC <- read.table("C:\\Users\\usuario\\Documents\\1.- Universidad\\nivel 10\\Taller de minería de datos avanzada\\Laboratorio 1\\seeds_dataset.txt", 
-                      col.names = c("A","P","C","LoK","WoK","AC","LoKG","Class"))
-
-=======
 library(mclust)
 library(psych)
 library(ggplot2)
 library(grid)
 library(gridExtra)
-library("fitdistrplus")
 
 
 #####################################
@@ -48,9 +23,10 @@ QQPLOT <- function(data, i){
   y <- quantile(data[,i],c(0.25,0.75))
   slope <- diff(y)/diff(x)
   intercept <- y[1]-slope*x[1]
-  p <- ggplot(data = data,aes(sample = data[,i], color = Class))+stat_qq()+geom_abline(aes(slope =slope, intercept = intercept),color ="blue")
-  p <- p + ggtitle(paste("Q-Q PLOT",colnames(data[i]),data$Class,sep =" ")) + xlab(xlab) + ylab(paste("Muestra de ",colnames(data[i])))
-  return(p) #<- p + geom_point(aes(color = Class))
+  
+  p <- ggplot(data = data,aes(sample = data[,i],color = Clase))+stat_qq()+geom_abline(aes(slope =slope, intercept = intercept), color = "blue")
+  p <- p + ggtitle(paste("Q-Q PLOT",colnames(data[i]),data$Clase,sep =" "))+ xlab(xlab) + ylab(paste("Muestra de ",colnames(data[i])))
+  return(p)
 }
 
 #Función que genera los gráficos de caja de los datos ingresados.
@@ -117,13 +93,19 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 names <- c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class")
 
 #Lectura del archivo
-seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
+#seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
+#                      col.names = names)
+
+seedsCC <- read.table("C:\\Users\\usuario\\Documents\\1.- Universidad\\nivel 10\\Taller de minería de datos avanzada\\Laboratorio 1\\seeds_dataset.txt", 
                       col.names = names)
 
+seedsCC$Class <- as.factor(seedsCC$Class)
+seedsCC$Clase[seedsCC$Class == 1] <- "Canadian"
+seedsCC$Clase[seedsCC$Class == 2] <- "Kama"
+seedsCC$Clase[seedsCC$Class == 3] <- "Roma"
 
 
 #       "Preprocesamiento"
->>>>>>> f459c6e5ccf7ad5dc842bfd42854f1be2eb0b875
 #Limpieza de datos
 #   Encontrar datos pérdidos
 
@@ -142,19 +124,6 @@ seedsSC <- seedsCC[,1:7]
 
 #       "Descripción estadística"
 #Descripción básica de los datos
-<<<<<<< HEAD
-
-describe(seedsSC)
-
-#Test de normalidad
-#Se prueba gráficamente
-
-sample <- seedsSC[,1]
-x <- qnorm(c(0.25,0.75))
-y <- quantile(sample, c(0.25,0.75))
-m <- diff(y)/diff(x)
-int <- y[1] - m * x[1]
-=======
 cat("\n#####    DESCRIPCIÓN ESTADÍSTICA    #####\n\n")
 print(describe(seedsSC))
 
@@ -261,6 +230,7 @@ p7.4 <- BOXPLOT(seedsCC,7)
 #LOs factores son los tipos de semillas
 #Dado que son todas semillas diferentes, se opta por la utilización de un anova entre sujetos (no medidas repetidas)
 
+attach(seedsCC)
 aov.area <-       anova(aov(Área~Class, na.action = na.exclude))
 aov.perimetro <-  anova(aov(Perímetro~Class, na.action = na.exclude))
 aov.compacidad <- anova(aov(Compacidad~Class, na.action = na.exclude))
@@ -273,10 +243,9 @@ p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`
                 aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$p.value)
 result.aov <- data.frame(names[1:7],p.value.aov)
 
-significancia<- c(result.aov$p.value.aov <= 0.05)
 result.aov$sig <- significancia
-result.aov$sig[!significancia] <- "No hay diferencias significativas"
-result.aov$sig[significancia] <- "Sí hay diferencias significativas"
+result.aov$sig[!result.aov$p.value.aov <= 0.05] <- "No hay diferencias significativas"
+result.aov$sig[result.aov$p.value.aov <= 0.05] <- "Sí hay diferencias significativas"
 cat("\n####   RESULTADOS DE ANÁLISIS DE VARIANZA    ####\n\n")
 print(result.aov)
 
@@ -307,11 +276,3 @@ multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
 
 
 
-
-
-
-
-
->>>>>>> f459c6e5ccf7ad5dc842bfd42854f1be2eb0b875
-
-p <- ggplot(seedsSC, aes(sample = sample))+stat_qq()+geom_abline(slope = m, intercept = int,color = "blue")
