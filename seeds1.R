@@ -248,12 +248,19 @@ p.value.aov <- c(anova(aov.area)$`Pr(>F)`[1],anova(aov.perimetro)$`Pr(>F)`[1],an
                  aov.lokg$p.value)
 
 result.aov <- data.frame(names[1:7],p.value.aov)
-
 result.aov$sig[!result.aov$p.value.aov > 0.05] <- "No hay diferencias significativas"
 result.aov$sig[result.aov$p.value.aov <= 0.05] <- "Sí hay diferencias significativas"
 
 cat("\n####   RESULTADOS DE ANÁLISIS DE VARIANZA    ####\n\n")
 print(result.aov)
+
+#Realización de test de POST-HOC
+TukeyHSD(aov.area)
+TukeyHSD(aov.perimetro)
+TukeyHSD(aov.compacidad)
+TukeyHSD(aov.lok)
+TukeyHSD(aov.wok)
+TukeyHSD(aov.asimetria)
 
 #Se grafican los datos entregados
 
