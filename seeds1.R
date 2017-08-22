@@ -93,11 +93,9 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 names <- c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class")
 
 #Lectura del archivo
-seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
+seedsCC <- read.table("C:\\Users\\Natalia\\Google Drive\\2017 - 2\\Minería de Datos Avanzada\\IX.- grupo 4 seeds\\seeds_dataset.txt", 
                       col.names = names)
-
-
-
+              
 #       "Preprocesamiento"
 #Limpieza de datos
 #   Encontrar datos pérdidos
