@@ -3,8 +3,7 @@ library(psych)
 library(ggplot2)
 library(grid)
 library(gridExtra)
-library("fitdistrplus")
-
+library(rgl)
 
 #####################################
 #     Declaración de funciones      #
@@ -24,9 +23,10 @@ QQPLOT <- function(data, i){
   y <- quantile(data[,i],c(0.25,0.75))
   slope <- diff(y)/diff(x)
   intercept <- y[1]-slope*x[1]
-  p <- ggplot(data = data,aes(sample = data[,i], color = Class))+stat_qq()+geom_abline(aes(slope =slope, intercept = intercept),color ="blue")
-  p <- p + ggtitle(paste("Q-Q PLOT",colnames(data[i]),data$Class,sep =" ")) + xlab(xlab) + ylab(paste("Muestra de ",colnames(data[i])))
-  return(p) #<- p + geom_point(aes(color = Class))
+  
+  p <- ggplot(data = data,aes(sample = data[,i],color = Clase))+stat_qq()+geom_abline(aes(slope =slope, intercept = intercept), color = "blue")
+  p <- p + ggtitle(paste("Q-Q PLOT",colnames(data[i]),data$Clase,sep =" "))+ xlab(xlab) + ylab(paste("Muestra de ",colnames(data[i])))
+  return(p)
 }
 
 #Función que genera los gráficos de caja de los datos ingresados.
@@ -38,6 +38,9 @@ BOXPLOT <- function(dato,i){
   p <- ggplot(data = dato,aes(x = Class, y = dato[i],fill = Class))
   p <- p + stat_boxplot()
   p <- p + ggtitle(paste("Box-plot",colnames(dato[i])))+ylab(colnames(dato[i]))
+  p <- p+ scale_fill_discrete(name="Clase",
+                              breaks=c("1", "2", "3"),
+                              labels=c("Canadian", "Kama", "Roma"))
   return(p)
 }
 
@@ -93,9 +96,24 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 names <- c("Área","Perímetro","Compacidad","LoK","WoK","Asimetría","LoKG","Class")
 
 #Lectura del archivo
+<<<<<<< HEAD
 seedsCC <- read.table("C:\\Users\\Natalia\\Google Drive\\2017 - 2\\Minería de Datos Avanzada\\IX.- grupo 4 seeds\\seeds_dataset.txt", 
                       col.names = names)
 seedsCC$Class<- as.factor(seedsCC$Class)
+=======
+#seedsCC <- read.table("C:\\Users\\Usuario\\Documents\\1. Universidad\\Nivel 10\\Tópico II - Minería de Datos Avanzados\\Lab1TMDA\\seeds_dataset.txt", 
+#                      col.names = names)
+
+seedsCC <- read.table("C:\\Users\\usuario\\Documents\\1.- Universidad\\nivel 10\\Taller de minería de datos avanzada\\Laboratorio 1\\seeds_dataset.txt", 
+                      col.names = names)
+
+seedsCC$Class <- as.factor(seedsCC$Class)
+seedsCC$Clase[seedsCC$Class == 1] <- "Canadian"
+seedsCC$Clase[seedsCC$Class == 2] <- "Kama"
+seedsCC$Clase[seedsCC$Class == 3] <- "Roma"
+
+
+>>>>>>> refs/remotes/origin/master
 #       "Preprocesamiento"
 #Limpieza de datos
 #   Encontrar datos pérdidos
@@ -126,7 +144,13 @@ cat("\n#####    TEST DE NORMALIDAD   #####\n\n")
 #             si p-value > alfa aceptar Ho  
 #Dicho en palabras un bajo valor de P, significa que la muestra provee suficiente evidencia 
 #como para rechaza la hipótesis nula
+<<<<<<< HEAD
 #Numérico
+=======
+
+#Test de normalidad numéricos para cada una de las características
+
+>>>>>>> refs/remotes/origin/master
 test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",1])
 test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "2",1])
 test1.3 <- NORMALITY(seedsCC[seedsCC$Class == "3",1])
@@ -220,6 +244,7 @@ p7.4 <- BOXPLOT(seedsCC,7)
 #Son más de 30 datos, entonces es robusto frente a la homocedasticidad
 #LOs factores son los tipos de semillas
 #Dado que son todas semillas diferentes, se opta por la utilización de un anova entre sujetos (no medidas repetidas)
+<<<<<<< HEAD
 attach(seedsCC)
 aov.area <-       anova(aov(Área~Class, na.action = na.exclude))
 aov.perimetro <-  anova(aov(Perímetro~Class, na.action = na.exclude))
@@ -231,14 +256,44 @@ aov.lokg <-       kruskal.test(LoKG~Class, na.action = na.exclude)
 
 p.value.aov <- c(aov.area$`Pr(>F)`[1],aov.perimetro$`Pr(>F)`[1],aov.compacidad$`Pr(>F)`[1],aov.lok$`Pr(>F)`[1],
                 aov.wok$`Pr(>F)`[1],aov.asimetria$`Pr(>F)`[1],aov.lokg$p.value)
-result.aov <- data.frame(names[1:7],p.value.aov)
+=======
 
+attach(seedsCC)
+aov.area <-       aov(Área~Class, na.action = na.exclude)
+aov.perimetro <-  aov(Perímetro~Class, na.action = na.exclude)
+aov.compacidad <- aov(Compacidad~Class, na.action = na.exclude)
+aov.lok <-        aov(LoK~Class, na.action = na.exclude)
+aov.wok <-        aov(WoK~Class, na.action = na.exclude)
+aov.asimetria <-  aov(Asimetría~Class, na.action = na.exclude)
+aov.lokg <-       kruskal.test(LoKG~Class, na.action = na.exclude)
+
+p.value.aov <- c(anova(aov.area)$`Pr(>F)`[1],anova(aov.perimetro)$`Pr(>F)`[1],anova(aov.compacidad)$`Pr(>F)`[1],
+                 anova(aov.lok)$`Pr(>F)`[1],
+                 anova(aov.wok)$`Pr(>F)`[1],anova(aov.asimetria)$`Pr(>F)`[1],
+                 aov.lokg$p.value)
+
+>>>>>>> refs/remotes/origin/master
+result.aov <- data.frame(names[1:7],p.value.aov)
+result.aov$sig[!result.aov$p.value.aov > 0.05] <- "No hay diferencias significativas"
+result.aov$sig[result.aov$p.value.aov <= 0.05] <- "Sí hay diferencias significativas"
+
+<<<<<<< HEAD
 significancia<- c(result.aov$p.value.aov <= 0.05)
 result.aov$sig <- significancia
 result.aov$sig[!significancia] <- "No hay diferencias significativas"
 result.aov$sig[significancia] <- "Sí hay diferencias significativas"
+=======
+>>>>>>> refs/remotes/origin/master
 cat("\n####   RESULTADOS DE ANÁLISIS DE VARIANZA    ####\n\n")
 print(result.aov)
+
+#Realización de test de POST-HOC
+TukeyHSD(aov.area)
+TukeyHSD(aov.perimetro)
+TukeyHSD(aov.compacidad)
+TukeyHSD(aov.lok)
+TukeyHSD(aov.wok)
+TukeyHSD(aov.asimetria)
 
 #Se grafican los datos entregados
 
@@ -301,6 +356,7 @@ points(cl$centers, col = 1:2, pch = 8, cex = 2)
 plot(seedsSC, col = cl$cluster)
 points(cl$centers, col = 1:2, pch = 8, cex = 2)
 
+<<<<<<< HEAD
 #Analisis de componentes principales
 pairs(seedsSC) #correlación gráfica entre diferentes variables
 cor(seedsSC) #tabla de correlación
@@ -317,3 +373,8 @@ plot3d(comp$scores[,1:3], col=seedsCC$Class, pch=21)
 
 
 
+=======
+pc <- princomp(seedsSC, cor = TRUE, scores = TRUE)
+
+plot3d(pc$scores[,1:3], col=iris$Species)
+>>>>>>> refs/remotes/origin/master
