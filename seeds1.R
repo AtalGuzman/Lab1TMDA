@@ -138,7 +138,9 @@ cat("\n#####    TEST DE NORMALIDAD   #####\n\n")
 #             si p-value > alfa aceptar Ho  
 #Dicho en palabras un bajo valor de P, significa que la muestra provee suficiente evidencia 
 #como para rechaza la hipótesis nula
-#Numérico
+s
+#Test de normalidad numéricos para cada una de las características
+
 test1.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",1])
 test1.2 <- NORMALITY(seedsCC[seedsCC$Class == "2",1])
 test1.3 <- NORMALITY(seedsCC[seedsCC$Class == "3",1])
@@ -167,15 +169,20 @@ test7.1 <- NORMALITY(seedsCC[seedsCC$Class == "1",7])
 test7.2 <- NORMALITY(seedsCC[seedsCC$Class == "2",7])
 test7.3 <- NORMALITY(seedsCC[seedsCC$Class == "3",7])
 
+#A continuación se procede a crear un dataframe
+#con el objetivo de recolectar la información importante obtenida en los test realizados anteriormente.
 test.Canadian <-  c(test1.1$p.value, test2.1$p.value, test3.1$p.value, test4.1$p.value, test5.1$p.value, test6.1$p.value, test7.1$p.value)
 test.Kama <-      c(test1.2$p.value, test2.2$p.value, test3.2$p.value, test4.2$p.value, test5.2$p.value, test6.2$p.value, test7.2$p.value)
 test.Rosa <-      c(test1.3$p.value, test2.3$p.value, test3.3$p.value, test4.3$p.value, test5.3$p.value, test6.3$p.value, test7.3$p.value)
 
 normal.test <- data.frame(names[1:7],test.Canadian,test.Kama,test.Rosa, row.names = 1)
+
+#Finalmente, se crea un último dataframe que recaba la conclusión de los testss
 result.test <- normal.test
 result.test[result.test > 0.05] <- "Normal"
 result.test[result.test <= 0.05] <- "No Normal"
 
+#Se muestran por consola los dataframes creados
 print(normal.test)
 cat("\n")
 print(result.test)
@@ -184,7 +191,6 @@ print(result.test)
 #Gráficos de los datos. QQPLOT, para ver la normalidad gráficamente 
 #y boxplot para detectar posibles diferencias que se detectarán con test de diferencias de medias 
 #(paramétrica o no parámetrica según sea el caso)
-
 #Área
 p1.1 <- QQPLOT(seedsCC[seedsCC$Class == "1",],1)
 p1.2 <- QQPLOT(seedsCC[seedsCC$Class == "2",],1)
@@ -263,7 +269,6 @@ TukeyHSD(aov.wok)
 TukeyHSD(aov.asimetria)
 
 #Se grafican los datos entregados
-
 cat("\n\n####   GENERACIÓN DE GRÁFICOS   ####\n")
 cat("\n####   ESPERE UN MOMENTO   ####\n")
 multiplot(p1.1,p1.2,p1.3, p1.4, cols = 2)
