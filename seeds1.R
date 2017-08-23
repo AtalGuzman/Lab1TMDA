@@ -418,7 +418,7 @@ pairs(seedsSC) #correlación gráfica entre diferentes variables
 cor(seedsSC) #tabla de correlación
 
 round(cor(seedsSC),2)
-mejores <-seedsSC[,c(1,3,6,7)]
+mejores <-seedsSC[,c(1,6,7)]
 round(cor(mejores),2)
 
 #comp= princomp(seedsSC, cor=TRUE, score=TRUE)
@@ -427,19 +427,24 @@ round(cor(mejores),2)
 #biplot(comp)
 attach(mejores)
 library(rgl)
-plot3d(mejores[c(1,3,4)], col=seedsCC$Class, pch=21,
+plot3d(mejores, col=seedsCC$Class, pch=21,
        xlab="Area", ylab="Asimetria", zlab="LoKG")
 
-BIC= mclustBIC(mejores[c(1,3,4)], prior= priorControl(functionName="defaultPrior", shrinkage=0.1))
+BIC= mclustBIC(mejores, prior= priorControl(functionName="defaultPrior", shrinkage=0.1))
 plot(BIC, main = "") 
 title(main="Gráfico de los BIC por configuración de parámetros")
 summary(BIC) #presentan los mejores valores
 
-mejordelavida= Mclust(mejores[c(1,3,4)], modelNames ="EEE", G=3 )
+mejordelavida= Mclust(mejores, modelNames ="EEE", G=3 )
 plot(mejordelavida, what="classification", main="")
-title(main="Clasificación del mejor de la vida")
+title(main="Clasificación con 3 grupos y modelo EEE")
+mejordelavida2= Mclust(mejores, modelNames ="EEE", G=3 )
+plot(mejordelavida2, what="classification", main="")
+title(main="Clasificación con 5 grupos y modelo EEE")
 
 table (seedsCC$Clase, mejordelavida$classification)
-plot3d(mejores[c(1,3,4)],mejordelavida$classification, pch=21,
+table (seedsCC$Clase, mejordelavida$classification)
+
+plot3d(mejores ,col=mejordelavida$classification, pch=21,
        xlab="Area", ylab="Asimetria", zlab="LoKG")
 mejordelavida$classification
