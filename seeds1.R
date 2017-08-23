@@ -283,6 +283,7 @@ multiplot(p7.1,p7.2,p7.3,p7.4,cols = 2)
 ###########################################
 #     REALIZACIÓN DE AGRUPAMIENTO         #
 ###########################################
+cat("\n#####    AGRUPAMIENTO    #####\n\n")
 
 #Función que se encarga de calcular el mclust, dado el grado de claster
 #a considerar (g) y el modelo que puede ser "EII", etc.
@@ -320,20 +321,23 @@ summary(cruza.datos)
 #Hacer el gráfico de BIC
 #mientras mayor es el resultado de Bic, mejor es la clasificacion
 BIC= mclustBIC(seedsCC[,1:7], prior= priorControl(functionName="defaultPrior", shrinkage=0.1))
-plot(BIC)
+plot(BIC, main = "") 
+title(main="Gráfico de los BIC por configuración de parámetros")
 summary(BIC) #presentan los mejores valores
 
 #en base al mejor valor segun BIC (los tres mejores)
 mejorBIC1 = Mclust(seedsSC, modelNames="EEV", G=3)
 summary(mejorBIC1)
-plot(mejorBIC1, what="classification")
+plot(mejorBIC1, what="classification", main="")
+title(main="Clasificación con 3 grupos y modelo EEV")
 mejorBIC2 = Mclust(seedsSC, modelNames="VEV", G=3)
 summary(mejorBIC2)
-plot(mejorBIC2, what="classification")
-mejorBIC3 = Mclust(seedsSC, modelNames="VVV", G=3)
+plot(mejorBIC2, what="classification", main="")
+title(main="Clasificación con 3 grupos y modelo VEV")
+mejorBIC3 = Mclust(seedsSC[3:5], modelNames="VVV", G=3)
 summary(mejorBIC3)
-plot(mejorBIC3, what="classification")
-
+plot(mejorBIC3, what="classification", main="")
+title(main="Clasificación con 3 grupos y modelo VVV")
 
 #comparación de clasificacion 
 #la clase que debería ser versus la clase que es
@@ -343,9 +347,11 @@ table (seedsCC$Clase, mejorBIC3$classification)
 
 #para comparar con el peor en 3 grupos:
 peorBIC1= Mclust(seedsSC, modelNames ="EII", G=3 )
-plot(peorBIC1, what="classification")
-peorBIC2= Mclust(seedsSC, modelNames ="VII", G=3 )
-plot(peorBIC1, what="classification")
+plot(peorBIC1, what="classification", main="")
+title(main="Clasificación con 3 grupos y modelo EII")
+peorBIC2= Mclust(seedsSC[3:5], modelNames ="VII", G=3 )
+plot(peorBIC2, what="classification", main="")
+title(main="Clasificación con 3 grupos y modelo VII")
 
 table (seedsCC$Clase, peorBIC1$classification)#districionde clases por cada grupo.
 table (seedsCC$Clase, peorBIC2$classification)
@@ -353,37 +359,51 @@ table (seedsCC$Clase, peorBIC2$classification)
 #Comparar con ICL
 ICL = mclustICL(seedsSC)
 summary(ICL)
+plot(ICL)
+title(main="Gráfico de los ICL por configuración de parámetros")
 
-mejorICL1 = Mclust(seedsSC, modelNames="VEV", G=5)
+
+mejorICL1 = Mclust(seedsSC[3:5], modelNames="VEV", G=3)
 summary(mejorICL1)
 plot(mejorICL1, what="classification")
+title(main="Clasificación con 3 grupos y modelo VEV")
 mejorICL2 = Mclust(seedsSC, modelNames="EEV", G=5)
 summary(mejorICL2)
 plot(mejorICL2, what="classification")
+title(main="Clasificación con 5 grupos y modelo EEV")
 mejorICL3 = Mclust(seedsSC, modelNames="EEV", G=3) #igual en bic
 summary(mejorICL3)
 plot(mejorICL3, what="classification")
+title(main="Clasificación con 3 grupos y modelo EEV")
 
 table(seedsCC$Clase, mejorICL1$classification)#districionde clases por cada grupo.
 table (seedsCC$Clase, mejorICL2$classification)
 table (seedsCC$Clase, mejorICL3$classification)
 
 #Hacer agrupamiento K-medias
-MacQueen <- kmeans(seedsSC, 3, algorithm = "MacQueen")
-plot(seedsSC, col = MacQueen$cluster)
-points(MacQueen$centers, col = 1:2, pch = 8, cex = 2)
+MacQueen <- kmeans(seedsSC[3:5], 3, algorithm = "MacQueen")
+plot(seedsSC[3:5], col = MacQueen$cluster)
+title(main="Clasificación con k-medias")
+plot(seedsSC[3:5], col=seedsCC$Class)
+points(MacQueen$centers, col = "blue", pch = 12)
+title(main="Clasificación real")
+MacQueen$centers
+help(points)
 
 HertiganWong <- kmeans(seedsSC, 3, algorithm = "Hartigan-Wong")
 plot(seedsSC, col = HertiganWong$cluster)
 points(HertiganWong$centers, col = 1:2, pch = 8, cex = 2)
+title(main="Clasificación con k-medias, algoritmo Hertigan-Wong")
 
 Lloyd <- kmeans(seedsSC, 3, algorithm = "Lloyd")
 plot(seedsSC, col = Lloyd$cluster)
 points(Lloyd$centers, col = 1:2, pch = 8, cex = 2)
+title(main="Clasificación con k-medias, Lloyd")
 
 Forgy <- kmeans(seedsSC, 3, algorithm = "Forgy")
 plot(seedsSC, col = Forgy$cluster)
 points(Forgy$centers, col = 1:2, pch = 8, cex = 2)
+title(main="Clasificación con k-medias, Forgy")
 
 #Comparación entre los distintos algoritmos de k-medias
 table(seedsCC$Clase,MacQueen$cluster)
@@ -398,10 +418,28 @@ pairs(seedsSC) #correlación gráfica entre diferentes variables
 cor(seedsSC) #tabla de correlación
 
 round(cor(seedsSC),2)
-comp= princomp(seedsSC, cor=TRUE, score=TRUE)
-summary(comp)
-plot(comp, type="lines")
-biplot(comp)
+mejores <-seedsSC[,c(1,3,6,7)]
+round(cor(mejores),2)
 
+#comp= princomp(seedsSC, cor=TRUE, score=TRUE)
+#summary(comp)
+#plot(comp, type="lines")
+#biplot(comp)
+attach(mejores)
 library(rgl)
-plot3d(seedsSC[1:3], col=seedsCC$Class, pch=21)
+plot3d(mejores[c(1,3,4)], col=seedsCC$Class, pch=21,
+       xlab="Area", ylab="Asimetria", zlab="LoKG")
+
+BIC= mclustBIC(mejores[c(1,3,4)], prior= priorControl(functionName="defaultPrior", shrinkage=0.1))
+plot(BIC, main = "") 
+title(main="Gráfico de los BIC por configuración de parámetros")
+summary(BIC) #presentan los mejores valores
+
+mejordelavida= Mclust(mejores[c(1,3,4)], modelNames ="EEE", G=3 )
+plot(mejordelavida, what="classification", main="")
+title(main="Clasificación del mejor de la vida")
+
+table (seedsCC$Clase, mejordelavida$classification)
+plot3d(mejores[c(1,3,4)],mejordelavida$classification, pch=21,
+       xlab="Area", ylab="Asimetria", zlab="LoKG")
+mejordelavida$classification
